@@ -1,2 +1,7 @@
-export const STAFF_SET = 'STAFF_SET'
-export const STAFFS_SET = 'STAFFS_SET'
+export const STAFF_SET = 'STAFF_SET';
+export const STAFFS_SET = 'STAFFS_SET';
+export const STAFF_STATE_CLEAR = "STAFF_STATE_CLEAR";
+
+export const COMMON_ERROR_SET = 'COMMON_ERROR_SET';
+export const COMMON_MESSAGE_SET = 'COMMON_MESSAGE_SET';
+export const COMMON_LOADING_SET = 'COMMON_LOADING_SET';

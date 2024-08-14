@@ -1,21 +1,27 @@
-import { STAFF_SET, STAFFS_SET } from "../actions/actionTypes"
+import { STAFF_SET, STAFF_STATE_CLEAR, STAFFS_SET } from "../actions/actionTypes"
 
 const initialState = {
     staff: {},
-    staffs: []
-}
+    staffs: [],
+};
 
 const staffReducer = (state = initialState, {type, payload}) => {
     switch (type) {
         case STAFF_SET:
-            return {...state, staff: payload}
+            return {...state, staff: payload};
 
         case STAFFS_SET:
-            return {...state, staffs: payload}
+            return {...state, staffs: payload};
         
-            default:
-            return state
+        case STAFF_STATE_CLEAR:
+            return {
+                staff: {},
+                staffs: [],
+            };
+
+        default:
+            return state;
     }
 }
 
-export default staffReducer
+export default staffReducer;

@@ -1,137 +1,200 @@
 import React, { Component } from 'react';
 import withRouter from '../../helpers/withRouter';
 import ContentHeader from '../common/ContentHeader';
-import { Button, Modal, Space, Table } from 'antd';
+import { Button, Modal, Space, Table, Pagination, Divider } from 'antd';
 import Column from 'antd/lib/table/Column';
-import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle, AiOutlineEye } from 'react-icons/ai';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle} from 'react-icons/ai';
+import { connect } from 'react-redux';
+import { clearStaffState, getStaffs } from '../../redux/actions/staffAction';
 
 class ListStaff extends Component {
-    constructor(){
-        super()
+    constructor() {
+        super();
 
-        this.state= {
-            dataSource: [
-                {id: 1, name:'Trần Thị Ngọc Khánh', unit: 'CNTT', birthday: '15/11/2002', born: 'Ngọc Lập-Yên Lập-Phú Thọ', sex: 'Nữ', note:''}
-            ],
-            staff: {}
-        }
+        this.state = {
+            staff: {},
+            limit: 1, // Default current page
+            pageIndex: 5, // Default number of items per page
+        };
     }
 
-    editStaff = (staff) =>{
+    componentDidMount = () => {
+        this.fetchStaffs();
+    };
+
+    componentWillUnmount = () => {
+        this.props.clearStaffState();
+    };
+
+    fetchStaffs = () => {
+        const { limit, pageIndex } = this.state;
+        this.props.getStaffs(limit, pageIndex);
+    };
+    
+    handleTableChange = (page, pageSize) => {
+        this.setState({ limit: page, pageIndex: pageSize }, () => {
+            this.fetchStaffs();
+        });
+    };
+
+    editStaff = (staff) => {
         console.log(staff);
-    }
+    };
 
-    deleteStaff = () =>{
+    deleteStaff = () => {
         console.log(this.state.staff);
-    }
+    };
 
     openDeleteConfirmModal = (staff) => {
-        this.setState({...this.state, staff: staff});
+        this.setState({ staff: staff });
 
-        console.log(staff);
-        
-        const message = 'Bạn có muốn xóa cán bộ ' + staff.name +' không?';
+        const message = 'Bạn có muốn xóa cán bộ ' + staff.userName + ' không?';
 
         Modal.confirm({
             title: 'Xác nhận',
-            icon: <AiOutlineExclamationCircle color='red' size={25}/>,
+            icon: <AiOutlineExclamationCircle color='red' size={25} />,
             content: message,
             onOk: this.deleteStaff,
             okText: 'Xóa',
-            cancelText: 'Thoát'
-        })
-    }
+            cancelText: 'Thoát',
+        });
+    };
 
     render() {
         const { navigate } = this.props.router;
+        const { staffs } = this.props;
+        const { limit, pageIndex } = this.state;
+
+        const dataSource = Array.isArray(staffs.items) ? staffs.items : [];
+        const totalItems = staffs.totalCount || 0; // Ensure total count is available
 
         return (
             <>
-                <ContentHeader 
-                navigate={navigate} 
-                title="Danh sách cán bộ" 
-                className="site-page-header"
-                ></ContentHeader>
+                <ContentHeader
+                    navigate={navigate}
+                    title="Danh sách cán bộ"
+                    className="site-page-header"
+                />
 
-                <Table 
-                dataSource={this.state.dataSource} 
-                size='small' 
-                rowKey='id'
+                <Table
+                    dataSource={dataSource}
+                    size="small"
+                    rowKey="id"
+                    pagination={false}
                 >
-                    <Column 
-                    title='Mã CB' 
-                    key='id' 
-                    dataIndex='id' 
-                    width={50} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Họ và tên' 
-                    key='name' 
-                    dataIndex='name'
-                    width={120} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Đơn vị' 
-                    key='unit' 
-                    dataIndex='unit' 
-                    width={60}
-                    align='center' 
-                    ></Column>
-                    <Column 
-                    title='Ngày sinh' 
-                    key='birthday' 
-                    dataIndex='birthday' 
-                    width={10} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Nơi sinh' 
-                    key='born' 
-                    dataIndex='born' 
-                    width={140} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Giới tính' 
-                    key='sex' 
-                    dataIndex='sex' 
-                    width={60} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Ghi chú' 
-                    key='note' 
-                    dataIndex='note' 
-                    width={100} 
-                    align='center'
-                    ></Column>
-                    <Column 
-                    title='Chức năng' 
-                    key='action' 
-                    width={50} 
-                    align='center'
-                    render={(_, record)=>(
-                        <Space size='middle'>
-                            <Button key={record.key} type='primary' size='small'>
-                                <AiOutlineEye style={{marginRight: 8 }} /> Xem
-                            </Button>
-                            <Button key={record.key} type='primary' size='small'
-                            onClick={()=>this.editStaff(record)}>
-                                <AiOutlineEdit style={{marginRight: 8 }} /> Sửa
-                            </Button>
-                            <Button key={record.key} type='primary' danger size='small'
-                            onClick={()=>this.openDeleteConfirmModal(record)}>
-                                <AiOutlineDelete style={{marginRight: 8 }} /> Xóa
-                            </Button>
-                        </Space>
-                    )}
-                    ></Column>
+                    {/* Table Columns */}
+                    <Column
+                        title="Mã CB"
+                        key="id"
+                        dataIndex="id"
+                        width={50}
+                        align="center"
+                    />
+                    <Column
+                        title="Hình ảnh"
+                        key="image"
+                        dataIndex="image"
+                        width={50}
+                        align="center"
+                        render={(image) => (
+                            <img
+                                src= {image}
+                                alt="Cán bộ"
+                                style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '50%' }}
+                            />
+                        )}
+                    />
+                    <Column
+                        title="Họ và tên"
+                        key="userName"
+                        dataIndex="userName"
+                        width={120}
+                        align="center"
+                    />
+                    <Column
+                        title="Đơn vị"
+                        key="unit_id"
+                        dataIndex="unit_id"
+                        width={60}
+                        align="center"
+                    />
+                    <Column
+                        title="Ngày sinh"
+                        key="dateOfBirth"
+                        dataIndex="dateOfBirth"
+                        width={100}
+                        align="center"
+                    />
+                    <Column
+                        title="Nơi sinh"
+                        key="placeOfBirth"
+                        dataIndex="placeOfBirth"
+                        width={140}
+                        align="center"
+                    />
+                    <Column
+                        title="Giới tính"
+                        key="isSex"
+                        dataIndex="isSex"
+                        width={60}
+                        align="center"
+                        render={(text) => (text ? 'Nam' : 'Nữ')}
+                    />
+                    <Column
+                        title="Ghi chú"
+                        key="note"
+                        dataIndex="note"
+                        width={100}
+                        align="center"
+                    />
+                    <Column
+                        title="Chức năng"
+                        key="action"
+                        width={150}
+                        align="center"
+                        render={(_, record) => (
+                            <Space size="middle">
+                                <Button
+                                    type="primary"
+                                    size="small"
+                                    onClick={() => this.editStaff(record)}
+                                >
+                                    <AiOutlineEdit style={{ marginRight: 8 }} /> Sửa
+                                </Button>
+                                <Button
+                                    type="primary"
+                                    danger
+                                    size="small"
+                                    onClick={() => this.openDeleteConfirmModal(record)}
+                                >
+                                    <AiOutlineDelete style={{ marginRight: 8 }} /> Xóa
+                                </Button>
+                            </Space>
+                        )}
+                    />
                 </Table>
+
+                <Divider></Divider>
+                
+                <Pagination align='center'
+                    current={limit} // Current page index
+                    pageSize={pageIndex} // Number of items per page
+                    total={totalItems}
+                    onChange={this.handleTableChange}
+                    showSizeChanger={false} // Disable size changer if you want a fixed number of items per page
+                />
             </>
         );
     }
 }
 
-export default withRouter(ListStaff)
+const mapStateToProps = (state) => ({
+    staffs: state.staffReducer.staffs,
+});
+
+const mapDispatchToProps = {
+    getStaffs,
+    clearStaffState,
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListStaff));
