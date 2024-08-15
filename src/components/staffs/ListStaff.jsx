@@ -6,6 +6,7 @@ import Column from 'antd/lib/table/Column';
 import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle} from 'react-icons/ai';
 import { connect } from 'react-redux';
 import { clearStaffState, getStaffs } from '../../redux/actions/staffAction';
+import moment from 'moment';
 
 class ListStaff extends Component {
     constructor() {
@@ -124,6 +125,10 @@ class ListStaff extends Component {
                         dataIndex="dateOfBirth"
                         width={100}
                         align="center"
+                        render={(date) => {
+                            // Format the date using moment.js
+                            return date ? moment(date).format('DD/MM/YYYY') : 'N/A';
+                        }}
                     />
                     <Column
                         title="Nơi sinh"

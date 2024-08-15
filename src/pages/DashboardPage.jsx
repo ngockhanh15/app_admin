@@ -1,11 +1,11 @@
 import "./DashboardPage.css";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import { Avatar, Button, Col, Layout, Menu, Row, theme } from 'antd';
+import { Avatar, Button, Col, Layout, Menu, message, Row, theme } from 'antd';
 import { IoAddCircleOutline, IoHomeOutline, IoListOutline, IoLogOutOutline, IoPeopleOutline, IoPersonAddOutline, IoPersonOutline, IoReaderOutline } from "react-icons/io5";
 import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import Home from "../components/home/Home";
@@ -13,6 +13,8 @@ import AddStaff from "../components/staffs/AddStaff";
 import AddUser from "../components/users/AddUser";
 import ListUser from "../components/users/ListUser";
 import ListStaff from "../components/staffs/ListStaff";
+import { useDispatch, useSelector } from "react-redux";
+import { setMessage } from "../redux/actions/commonAction";
 
 const { Header, Sider, Content } = Layout;
 
@@ -21,6 +23,16 @@ function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
 
   const navigate = useNavigate();
+
+  const msg = useSelector((state)=>state.commonReducer.message);
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    if(msg){
+      dispatch(setMessage(""));
+      message.success(msg);
+    }
+  },[msg,dispatch])
 
   const siteLayoutStyle = { marginLeft: marginLeft };
   const {

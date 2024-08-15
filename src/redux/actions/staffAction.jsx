@@ -22,7 +22,7 @@ export const insertStaff = (staff, navigate) => async (dispatch) => {
         else{
             dispatch({
                 type: COMMON_ERROR_SET,
-                payload: response.message
+                payload: response.message,
             })
         }
         console.log(response);
@@ -30,7 +30,7 @@ export const insertStaff = (staff, navigate) => async (dispatch) => {
         console.log('Error' + error)
         dispatch({
             type: COMMON_ERROR_SET,
-            payload: error
+            payload: error,
         })
     }
 
@@ -52,10 +52,21 @@ export const getStaffs = (limit = 1, pageIndex = 5) => async (dispatch) => {
                 type: STAFFS_SET,
                 payload: response.data,
             });
+
+        }
+        else{
+            dispatch({
+                type: COMMON_ERROR_SET,
+                payload: response.message,
+            });
         }
         
     } catch (error) {
         console.log(error);
+        dispatch({
+            type: COMMON_ERROR_SET,
+            payload: error,
+        });
     }
 };
 

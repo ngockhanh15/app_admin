@@ -17,6 +17,6 @@ const commonReducer = (state = initialState, {type, payload}) => {
         default:
             return state;
     }
-}
+};
 
 export default commonReducer;
