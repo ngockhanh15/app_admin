@@ -69,6 +69,35 @@ export const getStaffs = (limit = 1, pageIndex = 5) => async (dispatch) => {
         });
     }
 };
+export const deleteStaff = (id) => async (dispatch) => {
+    const service = new StaffService();
+
+    try {
+        console.log('delete staff', id);
+
+        const response = await service.deleteStaff(id);
+
+        if (response.status === 200) {
+            dispatch({
+                type: COMMON_MESSAGE_SET,
+                payload: 'Đã xóa thành công!',
+            });
+            // Refetch the staff list to update the table
+            dispatch(getStaffs());
+        } else {
+            dispatch({
+                type: COMMON_ERROR_SET,
+                payload: response.message,
+            });
+        }
+    } catch (error) {
+        console.log('Error' + error);
+        dispatch({
+            type: COMMON_ERROR_SET,
+            payload: error,
+        });
+    }
+};
 
 export const clearStaffState = () => (dispatch) =>{
     dispatch({type: STAFF_STATE_CLEAR});

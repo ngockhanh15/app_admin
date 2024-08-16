@@ -5,7 +5,7 @@ import { Button, Modal, Space, Table, Pagination, Divider } from 'antd';
 import Column from 'antd/lib/table/Column';
 import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle} from 'react-icons/ai';
 import { connect } from 'react-redux';
-import { clearStaffState, getStaffs } from '../../redux/actions/staffAction';
+import { clearStaffState, getStaffs, deleteStaff } from '../../redux/actions/staffAction';
 import moment from 'moment';
 
 class ListStaff extends Component {
@@ -43,7 +43,8 @@ class ListStaff extends Component {
     };
 
     deleteStaff = () => {
-        console.log(this.state.staff);
+        const { staff } = this.state;
+        this.props.deleteStaff(staff.id);
     };
 
     openDeleteConfirmModal = (staff) => {
@@ -200,6 +201,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     getStaffs,
     clearStaffState,
+    deleteStaff, // Added deleteStaff to props
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ListStaff));

@@ -9,4 +9,7 @@ export default class StaffService {
         const params = { limit, pageIndex };
         return await axios.get(API_STAFF,{ params });
     };
+    deleteStaff = async(id) => {
+        return await axios.delete(`${API_STAFF}?Id=${id}`);
+    };
 }
