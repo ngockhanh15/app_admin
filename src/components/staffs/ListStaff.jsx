@@ -3,9 +3,10 @@ import withRouter from '../../helpers/withRouter';
 import ContentHeader from '../common/ContentHeader';
 import { Button, Modal, Space, Table, Pagination, Divider } from 'antd';
 import Column from 'antd/lib/table/Column';
-import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle} from 'react-icons/ai';
+import { AiOutlineDelete, AiOutlineEdit, AiOutlineExclamationCircle } from 'react-icons/ai';
 import { connect } from 'react-redux';
 import { clearStaffState, getStaffs, deleteStaff } from '../../redux/actions/staffAction';
+import axios from 'axios';
 import moment from 'moment';
 
 class ListStaff extends Component {
@@ -16,26 +17,44 @@ class ListStaff extends Component {
             staff: {},
             limit: 1, // Default current page
             pageIndex: 5, // Default number of items per page
+            units: [], // Store units fetched from the API
         };
     }
 
     componentDidMount = () => {
-        this.fetchStaffs();
+        this.fetchUnits(); // Fetch units first
+        this.fetchStaffs(); // Fetch staff data
     };
 
     componentWillUnmount = () => {
         this.props.clearStaffState();
     };
 
+    fetchUnits = () => {
+        axios.get('http://192.168.6.19:45455/api/Unit')
+            .then(response => {
+                this.setState({ units: response.data.items });
+            })
+            .catch(error => {
+                console.error('There was an error fetching the units!', error);
+            });
+    };
+
     fetchStaffs = () => {
         const { limit, pageIndex } = this.state;
         this.props.getStaffs(limit, pageIndex);
     };
-    
+
     handleTableChange = (page, pageSize) => {
         this.setState({ limit: page, pageIndex: pageSize }, () => {
             this.fetchStaffs();
         });
+    };
+
+    getUnitNameById = (id) => {
+        const { units } = this.state;
+        const unit = units.find(unit => unit.id === id);
+        return unit ? unit.userName : 'N/A'; // Return 'N/A' if unit not found
     };
 
     editStaff = (staff) => {
@@ -89,18 +108,18 @@ class ListStaff extends Component {
                         title="Mã CB"
                         key="id"
                         dataIndex="id"
-                        width={50}
+                        width={80} // Adjusted width
                         align="center"
                     />
                     <Column
                         title="Hình ảnh"
                         key="image"
                         dataIndex="image"
-                        width={50}
+                        width={70} // Adjusted width
                         align="center"
                         render={(image) => (
                             <img
-                                src= {image}
+                                src={`http://192.168.6.19:45455/Images/${image}`}
                                 alt="Cán bộ"
                                 style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '50%' }}
                             />
@@ -110,21 +129,22 @@ class ListStaff extends Component {
                         title="Họ và tên"
                         key="userName"
                         dataIndex="userName"
-                        width={120}
+                        width={150} // Adjusted width
                         align="center"
                     />
                     <Column
                         title="Đơn vị"
                         key="unit_id"
                         dataIndex="unit_id"
-                        width={60}
+                        width={120} // Adjusted width
                         align="center"
+                        render={(unit_id) => this.getUnitNameById(unit_id)} // Display unit name
                     />
                     <Column
                         title="Ngày sinh"
                         key="dateOfBirth"
                         dataIndex="dateOfBirth"
-                        width={100}
+                        width={120} // Adjusted width
                         align="center"
                         render={(date) => {
                             // Format the date using moment.js
@@ -135,14 +155,14 @@ class ListStaff extends Component {
                         title="Nơi sinh"
                         key="placeOfBirth"
                         dataIndex="placeOfBirth"
-                        width={140}
+                        width={180} // Adjusted width
                         align="center"
                     />
                     <Column
                         title="Giới tính"
                         key="isSex"
                         dataIndex="isSex"
-                        width={60}
+                        width={80} // Adjusted width
                         align="center"
                         render={(text) => (text ? 'Nam' : 'Nữ')}
                     />
@@ -150,13 +170,13 @@ class ListStaff extends Component {
                         title="Ghi chú"
                         key="note"
                         dataIndex="note"
-                        width={100}
+                        width={150} // Adjusted width
                         align="center"
                     />
                     <Column
                         title="Chức năng"
                         key="action"
-                        width={150}
+                        width={180} // Adjusted width
                         align="center"
                         render={(_, record) => (
                             <Space size="middle">
@@ -182,7 +202,8 @@ class ListStaff extends Component {
 
                 <Divider></Divider>
                 
-                <Pagination align='center'
+                <Pagination
+                    align="center"
                     current={limit} // Current page index
                     pageSize={pageIndex} // Number of items per page
                     total={totalItems}

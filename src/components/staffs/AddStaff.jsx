@@ -5,28 +5,40 @@ import ContentHeader from '../common/ContentHeader';
 import { connect } from 'react-redux';
 import { insertStaff } from '../../redux/actions/staffAction';
 import { IoCloudUploadOutline } from 'react-icons/io5';
+import axios from 'axios';
 
 class AddStaff extends Component {
     state = {
         fileList: [],
+        units: [], // Store units fetched from the API
     };
+
+    componentDidMount() {
+        // Fetch units from the API
+        axios.get('http://192.168.6.19:45455/api/Unit')
+            .then(response => {
+                // Extract the items array from the API response
+                this.setState({ units: response.data.items });
+            })
+            .catch(error => {
+                console.error('There was an error fetching the units!', error);
+            });
+    }
 
     onSubmitForm = (values) => {
         console.log(values);
 
         const { navigate } = this.props.router;
 
-        // Add the selected file to the form data
         const formData = new FormData();
         formData.append('ImageFiles', values.ImageFiles);
         formData.append('UserName', values.UserName);
         formData.append('Unit_id', values.Unit_id);
-        formData.append('DateOfBirth', values.DateOfBirth.format('YYYY/MM/DD')); // Format the date as YYYY/MM/DD
+        formData.append('DateOfBirth', values.DateOfBirth.format('YYYY/MM/DD'));
         formData.append('PlaceOfBirth', values.PlaceOfBirth);
-        formData.append('IsSex', values.IsSex ? 'true' : 'false'); // Ensure boolean is properly formatted
+        formData.append('IsSex', values.IsSex ? 'true' : 'false');
         formData.append('Note', values.Note);
 
-        // Append the file to formData if available
         if (this.state.fileList.length > 0) {
             formData.append('ImageFiles', this.state.fileList[0].originFileObj);
         }
@@ -40,12 +52,7 @@ class AddStaff extends Component {
 
     render() {
         const { navigate } = this.props.router;
-        const { fileList } = this.state;
-        const units = [
-            { id: '69fa3ebf-6870-480e-9e93-6280614ccf6f', name: 'viện khoa học quân sự' },
-            { id: 'unit2-uuid', name: 'Unit 2' },
-            // Add more units as needed
-        ];
+        const { fileList, units } = this.state;
 
         return (
             <div>
@@ -65,14 +72,14 @@ class AddStaff extends Component {
                             <Form.Item
                                 label="Hình ảnh"
                                 name="ImageFiles"
-                                rules={[{ required: true, message: 'Hãy tải ảnh lên!' }]}
+                                rules={[{ required: true, message: 'Vui lòng tải ảnh lên!' }]}
                             >
                                 <Upload
                                     name="ImageFiles"
                                     listType="picture"
                                     fileList={fileList}
                                     onChange={this.handleUploadChange}
-                                    beforeUpload={() => false} // Prevent automatic upload
+                                    beforeUpload={() => false}
                                 >
                                     <Button icon={<IoCloudUploadOutline />}>Tải hình ảnh</Button>
                                 </Upload>
@@ -89,12 +96,12 @@ class AddStaff extends Component {
                             <Form.Item
                                 label="Đơn vị"
                                 name="Unit_id"
-                                rules={[{ required: true, message: 'Please select a unit!' }]}
+                                rules={[{ required: true, message: 'Vui lòng chọn đơn vị!' }]}
                             >
                                 <Select placeholder="Chọn đơn vị">
                                     {units.map((unit) => (
                                         <Select.Option key={unit.id} value={unit.id}>
-                                            {unit.name}
+                                            {unit.userName}
                                         </Select.Option>
                                     ))}
                                 </Select>
@@ -105,22 +112,23 @@ class AddStaff extends Component {
                                 name="DateOfBirth"
                                 rules={[{ required: true, message: 'Vui lòng nhập ngày sinh!' }]}
                             >
-                                <DatePicker
-                                    format="YYYY/MM/DD"
-                                    placeholder="Chọn ngày sinh"
-                                />
+                                <DatePicker format="YYYY/MM/DD" placeholder="Chọn ngày sinh" />
                             </Form.Item>
 
-                            <Form.Item label="Nơi sinh" name="PlaceOfBirth">
+                            <Form.Item 
+                                label="Nơi sinh" 
+                                name="PlaceOfBirth"
+                                rules={[{ required: true, message: 'Vui lòng nhập nơi sinh!' }]}
+                            >
                                 <Input></Input>
                             </Form.Item>
 
                             <Form.Item
                                 label="Giới tính"
                                 name="IsSex"
-                                rules={[{ required: true, message: 'Please select a gender!' }]}
+                                rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
                             >
-                                <Select>
+                                <Select placeholder="Chọn giới tính">
                                     <Select.Option value="true">Nam</Select.Option>
                                     <Select.Option value="false">Nữ</Select.Option>
                                 </Select>
