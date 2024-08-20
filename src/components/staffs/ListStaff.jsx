@@ -31,7 +31,7 @@ class ListStaff extends Component {
     };
 
     fetchUnits = () => {
-        axios.get('http://192.168.6.19:45455/api/Unit')
+        axios.get('http://192.168.6.29:45456/api/Unit')
             .then(response => {
                 this.setState({ units: response.data.items });
             })
@@ -119,7 +119,7 @@ class ListStaff extends Component {
                         align="center"
                         render={(image) => (
                             <img
-                                src={`http://192.168.6.19:45455/Images/${image}`}
+                                src={`http://192.168.6.29:45456/Images/${image}`}
                                 alt="Cán bộ"
                                 style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '50%' }}
                             />
