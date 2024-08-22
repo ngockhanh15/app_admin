@@ -15,7 +15,7 @@ class AddStaff extends Component {
 
     componentDidMount() {
         // Fetch units from the API
-        axios.get('http://192.168.6.11:45457/api/Unit')
+        axios.get('http://192.168.6.16:45455/api/Unit')
             .then(response => {
                 // Extract the items array from the API response
                 this.setState({ units: response.data.items });
